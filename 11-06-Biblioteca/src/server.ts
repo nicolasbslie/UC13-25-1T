@@ -10,8 +10,8 @@ app.use(express.json())
 //Listar livros
 app.get("/livros", async (req, res) => {
     try {
-        const [titulos] = await pool.query("SELECT * FROM livros")
-        return res.status(200).json(titulos)
+        const [livros] = await pool.query("SELECT * FROM livros")
+        return res.status(200).json(livros)
     } catch(erro) {
         console.log("Erro: ", erro)
         return res.status(500).json("Erro ao buscar os títulos dos livros: " + erro)
