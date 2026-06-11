@@ -10,7 +10,7 @@ app.use(express.json())
 //Listar livros
 app.get("/livros", async (req, res) => {
     try {
-        const [titulos] = await pool.query("SELECT * FROM titulos")
+        const [titulos] = await pool.query("SELECT * FROM livros")
         return res.status(200).json(titulos)
     } catch(erro) {
         console.log("Erro: ", erro)
@@ -24,7 +24,7 @@ app.post("/livros", async (req, res) => {
         const { nome_livro, autor, editora, paginas } = req.body
 
         const [resultado] = await pool.query(
-            "INSERT INTO titulos (nome_livro, autor, editora, pagina) VALUES (?, ?, ?, ?)",
+            "INSERT INTO livros (nome_livro, autor, editora, pagina) VALUES (?, ?, ?, ?)",
             [nome_livro, autor, editora, paginas]
         )
         return res.status(201).json("Livro cadastrado com sucesso!")
@@ -41,7 +41,7 @@ app.put("/livros/:id", async (req, res) => {
     const { nome_livro, autor, editora, paginas } = req.body;
 
     const [resultado] = await pool.query(
-      "UPDATE titulos SET nome_livro = ?, autor = ?, editora = ?, paginas = ? WHERE id = ?",
+      "UPDATE livros SET nome_livro = ?, autor = ?, editora = ?, paginas = ? WHERE id = ?",
       [nome_livro, autor, editora, paginas, id]
     );
 
@@ -57,7 +57,7 @@ app.delete("/livros/:id", async (req, res) => {
     const { id } = req.params;
 
     const [resultado] = await pool.query(
-      "DELETE FROM titulos WHERE id = ?",
+      "DELETE FROM livros WHERE id = ?",
       [id]
     );
 
