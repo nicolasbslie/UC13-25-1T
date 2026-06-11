@@ -24,7 +24,7 @@ app.post("/livros", async (req, res) => {
         const { nome_livro, autor, editora, paginas } = req.body
 
         const [resultado] = await pool.query(
-            "INSERT INTO livros (nome_livro, autor, editora, pagina) VALUES (?, ?, ?, ?)",
+            "INSERT INTO livros (nome_livro, autor, editora, paginas) VALUES (?, ?, ?, ?)",
             [nome_livro, autor, editora, paginas]
         )
         return res.status(201).json("Livro cadastrado com sucesso!")
