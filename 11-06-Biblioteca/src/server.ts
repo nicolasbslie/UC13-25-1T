@@ -66,3 +66,8 @@ app.delete("/livros/:id", async (req, res) => {
     return res.status(500).json("Erro interno do servidor: " + erro);
   }
 });
+
+//LISTEN
+app.listen(PORT, () => {
+  console.log("O servidor está no ar, ufa");
+});
