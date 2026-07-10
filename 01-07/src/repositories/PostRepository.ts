@@ -1,30 +1,34 @@
-import { AppDataSource } from '../config/data-source';
-import { Post } from '../models/Post';
+import { AppDataSource } from "../config/data-source";
+import { Post } from "../models/Post";
+import { User } from "../models/User";
 
-const repository = AppDataSource.getRepository(Post);
+
+const repo = AppDataSource.getRepository(Post)
 
 export const PostRepository = {
-    // Busca todos os posts, incluindo os dados do usuário dono de cada post.
+   
+    //Encontra TODOS os posts PARA TODO MUNDO
     async findAll() {
-        return repository.find({ relations: ['user'] });
+        
+        return repo.find({relations: ['user']})
     },
 
-    async findById(id: number) {
-        return repository.findOne({
-            where: { id },
-            relations: ['user'],
-        });
+    // Encontra um post através do id dele
+    async findById(id:number){
+        return repo.findOne({where:{id}, relations:['user']})
     },
 
-    create(data: Partial<Post>) {
-        return repository.create(data);
+    //Este método encontra TODOS os posts de um usuário específico
+    async findByUserId(userId:number){
+        return repo.find({where: {user: {id:userId}}, relations: ['user']})
     },
+    
+    async create(data: { id?: number; title: string; user: User }) {
+        const post = repo.create(data);
+        return repo.save(post);
+      },
 
-    async delete(id: number) {
-        const user = await PostRepository.delete(id)
-
-        if(user.affected === 0){
-            throw new NotFoundError("Usuário não encontrado")
-        }
-    },
-};
+    async delete(id:number){
+        return repo.delete(id)
+    }
+}

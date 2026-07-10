@@ -1,21 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Post } from './Post';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Post } from "./Post"
 
-@Entity('users')
-export class User {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+@Entity('users') // cria uma tabela chamada 'users'
+export class User{
 
-    @Column({ length: 100, nullable: false })
-    name: string;
+    @PrimaryGeneratedColumn() // marca o atributo como uma coluna com PRIMARY KEY
+    id:number
 
-    @Column({ unique: true })
-    email: string;
+    // lenght define qual o número máximo de caracteres
+    // nullable:false marca a coluna como NOT NULL
+    @Column({length:100, nullable:false}) // marca o atributo como uma coluna comum
+    name:string
 
-    @Column({ select: false })
-    password: string;
+    // unique:true marca a coluna como UNIQUE
+    @Column({length:100, unique:true})
+    email:string
 
+    
+    @Column({length:255, nullable:false})
+    password:string
+
+    // um para muitos
+    // um usuário pode ter MUITOS posts
+    // passamos dois parâmetros:
+    // o primeiro é uma arrow function que retorna a entidade/model com a qual User se relaciona (Post)
+    // o segundo parâmetro indica qual a propriedade dentro da model Post que referencia o User. 
+    // com isso, temos as nossas chaves estrangeiras criadas
     @OneToMany(() => Post, post => post.user)
-    posts: Post[];
+    posts: Post[]
 }

@@ -35,7 +35,7 @@ export class UserController{
         try{
 
             const { name, email, password } = req.body // pega name, email e password pelo corpo da requisição
-            const user = UserService.create({name, email, password})
+            const user = await UserService.create({name, email, password})
             return res.status(201).json(user)
             
         } catch(error){

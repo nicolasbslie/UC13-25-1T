@@ -1,61 +1,77 @@
-import { PostRepository } from '../repositories/PostRepository';
-import { UserRepository } from '../repositories/UserRepository';
-import { NotFoundError } from './UserService';
+import bcrypt from "bcrypt";
+import { omitPassword } from "../utils/omitPassword";
+import { UserRepository } from "../repositories/UserRepository";
+import { PostRepository } from "../repositories/PostRepository";
+import { User } from "../models/User";
+
+// A camada Service é responsável por chamar os métodos de Repository e cuidar das validações das nossas regras de negócio (ex: um usuário precisa ter email válido, etc)
+
+// Aqui estamos criando uma classe de erro que extende a classe Error
+// Isso é para permitir que, mais tarde, o Controller identifique o tipo de erro de uma forma mais clara
+
+export class NotFoundError extends Error {}
 
 export const PostService = {
-    async listAll() {
-        return PostRepository.findAll();
-    },
+  // Como para listar não precisamos validar nada, aqui só chamamos o método do Repository mesmo, pois o Controller NÃO PODE se comunicar diretamente com Repository, e sim com Service
+  async listAll() {
+    return PostRepository.findAll();
+  },
+  
+  async getById(id: number) {
+    const post = await PostRepository.findById(id);
+  
+    if (!post) {
+      throw new NotFoundError("Post não encontrado!");
+    }
+  
+    return post;
+  },
 
-    async getById(id: number) {
-        const post = await PostRepository.findById(id);
+  async listMyPosts(userId: number){
+    return PostRepository.findByUserId(userId)
+  },
 
-        if (!post) {
-            throw new NotFoundError('Post não encontrado.');
-        }
+  //import bcrypt from 'bcrypt'
 
-        return post;
-    },
+  async create(data: { title: string; userId: number }) {
 
-    // Cria um post, mas antes verifica se o usuário dono dele realmente existe.
-    // Essa verificação é uma regra de negócio, por isso vive aqui, e não no
-    // Controller nem no Repository.
-    async create(data: { title: string; userId: number }) {
-        const user = await UserRepository.findById(data.userId);
+    if (!data.title) {
+        throw new Error("Título é obrigatório!");
+    }
 
-        if (!user) {
-            throw new NotFoundError('Usuário não encontrado.');
-        }
+    if (!data.userId) {
+        throw new Error("Usuário é obrigatório!");
+    }
 
-        const post = PostRepository.create({ title: data.title, user });
-        return PostRepository.save(post);
-    },
+    const user = await UserRepository.findById(data.userId);
 
-    async update(id: number, data: { title?: string; userId?: number }) {
-        const post = await PostRepository.findById(id);
+    if (!user) {
+        throw new NotFoundError("Usuário não encontrado!");
+    }
 
-        if (!post) {
-            throw new NotFoundError('Post não encontrado.');
-        }
+    return PostRepository.create({
+        title: data.title,
+        user
+    });
+},
 
-        if (data.title) post.title = data.title;
+  async update(id: number, data: { title?: string }) {
+    const post = await PostRepository.findById(id);
 
-        if (data.userId) {
-            const user = await UserRepository.findById(data.userId);
-            if (!user) {
-                throw new NotFoundError('Usuário não encontrado.');
-            }
-            post.user = user;
-        }
+    if (!post) {
+        throw new NotFoundError("Post não encontrado.");
+    }
 
-        return PostRepository.save(post);
-    },
+    if (data.title) post.title = data.title;
 
-    async delete(id: number) {
-        const result = await PostRepository.delete(id);
+    return PostRepository.create(post);
+},
 
-        if (result.affected === 0) {
-            throw new NotFoundError('Post não encontrado.');
-        }
-    },
+async delete(id: number) {
+    const result = await PostRepository.delete(id);
+
+    if (result.affected === 0) {
+        throw new NotFoundError('Post não encontrado.');
+    }
+},
 };
