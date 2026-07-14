@@ -33,17 +33,17 @@ export const PostService = {
 
   //import bcrypt from 'bcrypt'
 
-  async create(data: { title: string; userId: number }) {
+  async create(data: { title: string}, userId: number) {
 
     if (!data.title) {
         throw new Error("Título é obrigatório!");
     }
 
-    if (!data.userId) {
+    if (!userId) {
         throw new Error("Usuário é obrigatório!");
     }
 
-    const user = await UserRepository.findById(data.userId);
+    const user = await UserRepository.findById(userId);
 
     if (!user) {
         throw new NotFoundError("Usuário não encontrado!");

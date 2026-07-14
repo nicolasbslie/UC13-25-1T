@@ -12,7 +12,7 @@ router.get("/", postController.list.bind(postController));
 router.get('/myposts', authMiddleware, postController.listMyPosts.bind(postController))
 
 router.get("/:id", postController.getById.bind(postController));
-router.post("/", postController.create.bind(postController));
+router.post("/", authMiddleware, postController.create.bind(postController));
 router.put("/:id", postController.update.bind(postController));
 router.delete("/:id", postController.delete.bind(postController));
 

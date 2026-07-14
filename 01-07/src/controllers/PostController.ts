@@ -45,12 +45,13 @@ export class PostController {
     // POST /posts
     async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const { title, userId } = req.body;
+            const { title } = req.body;
+            const loggedUser = (req as any).user
 
-            const post = await PostService.create({
-                title,
-                userId
-            });
+            const post = await PostService.create(
+                {title},
+                loggedUser.id
+            );
 
             return res.status(201).json(post);
         } catch (error) {
